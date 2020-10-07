@@ -80,7 +80,6 @@ public class NioChatClientExample implements  Runnable{
     }
 
     private void handleSendMessage(SocketChannel channel)  {
-
         Scanner scanner = new Scanner(System.in);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Runnable r = ()-> {
