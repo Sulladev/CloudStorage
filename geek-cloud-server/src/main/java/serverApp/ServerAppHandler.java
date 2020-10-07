@@ -18,6 +18,7 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
         if (msg instanceof FileRequest) {
             FileRequest fileRequest = (FileRequest) msg;
             sendFileToClient(ctx,fileRequest);
@@ -76,6 +77,7 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
             }
             if (command[0].equals("/list")) {
                 fileListUpdate(ctx);
+                System.out.println("File list was updated");
             }
         }
     }
