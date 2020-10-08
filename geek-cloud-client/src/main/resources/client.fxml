@@ -9,11 +9,10 @@
 <?import javafx.scene.control.Label?>
 <VBox fx:id="rootNode" alignment="CENTER" prefHeight="450.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.172-ea" fx:controller="clientApp.Controller">
     <HBox>
-        <TextField fx:id="console" focusTraversable="false" promptText="Укажите имя файла" HBox.hgrow="ALWAYS" />
-        <Button onAction="#pressOnDownloadBtn" text="Download" />
-        <Button onAction="#pressOnUploadBtn" text="Upload" />
-        <Button onAction="#pressOnDeleteOnClientBtn" text="Delete On Client" />
-        <Button onAction="#pressOnDeleteOnServerBtn" text="Delete On Server" />
+        <TextField fx:id="login" focusTraversable="false" promptText="Type the login" HBox.hgrow="ALWAYS" />
+        <TextField fx:id="password" focusTraversable="false" promptText="Type the password" HBox.hgrow="ALWAYS" />
+        <Button onAction="#pressOnLoginBtn" text="Login" />
+
     </HBox>
     <HBox>
         <VBox HBox.hgrow="ALWAYS"><Label text="Local storage" HBox.hgrow="ALWAYS"/>
@@ -23,5 +22,12 @@
             <ListView fx:id="serverFileList" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
         </VBox>
 
+    </HBox>
+    <HBox>
+        <TextField fx:id="console" focusTraversable="false" promptText="Type the file name" HBox.hgrow="ALWAYS" />
+        <Button onAction="#pressOnDownloadBtn" text="Download" />
+        <Button onAction="#pressOnUploadBtn" text="Upload" />
+        <Button onAction="#pressOnDeleteOnClientBtn" text="Delete On Client" />
+        <Button onAction="#pressOnDeleteOnServerBtn" text="Delete On Server" />
     </HBox>
 </VBox>

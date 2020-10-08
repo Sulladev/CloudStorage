@@ -11,13 +11,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.sql.SQLData;
 import java.util.ArrayList;
 
 public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     ArrayList<String> fileList = new ArrayList<>();
 
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
 
         if (msg instanceof FileRequest) {
             FileRequest fileRequest = (FileRequest) msg;
@@ -35,13 +38,15 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void fileListUpdate(ChannelHandlerContext ctx) {
+    // отправляем обновленный список файлов на сервере - клиенту
+    private void sendFileListUpdate(ChannelHandlerContext ctx) {
         refreshFilesList("server_repository");
         CommandMessage commandMessage = new CommandMessage("/list");
         commandMessage.setCommandList(fileList);
         ctx.writeAndFlush(commandMessage);
     }
 
+    //  отправляем файл клиенту
     private void sendFileToClient(ChannelHandlerContext ctx, FileRequest fileRequest) {
         try {
             if (Files.exists(Paths.get("server_repository/" + fileRequest.getFileName()))) {
@@ -54,11 +59,12 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    // принимаем файл от клиента
     private void writeFileFromClient(ChannelHandlerContext ctx, FileMessage fileMessage) {
         try {
             if (!Files.exists(Paths.get("server_repository/" + fileMessage.getFileName()))) {
                 Files.write(Paths.get("server_repository/" + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
-                fileListUpdate(ctx);
+                sendFileListUpdate(ctx);
                 System.out.println("File received");
             }
         } catch (IOException e) {
@@ -67,21 +73,22 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-
+    // принимаем и парсим команды на удаление файла на сервере и получение списка файлов с сервера
     private void readCommand(ChannelHandlerContext ctx, CommandMessage commandMessage) {
         if (commandMessage.getCommand().startsWith("/")) {
             String[] command = commandMessage.getCommand().split(" ");
             if (command[0].equals("/del")) {
                 deleteFile(command[1]);
-                fileListUpdate(ctx);
+                sendFileListUpdate(ctx);
             }
             if (command[0].equals("/list")) {
-                fileListUpdate(ctx);
+                sendFileListUpdate(ctx);
                 System.out.println("File list was updated");
             }
         }
     }
 
+    //обновляем список файлов на сервере
     private void refreshFilesList(String path) {
         fileList.clear();
         try {
@@ -94,6 +101,7 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    // удаляем файл на сервере
     private void deleteFile (String fileToDelete) {
         if (Files.exists(Paths.get("server_repository/" + fileToDelete))) {
             try {
