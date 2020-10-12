@@ -77,11 +77,6 @@ public class Controller implements Initializable {
         refreshClientFileList();
     }
 
-//    private void consoleCommand (ActionEvent actionEvent) {
-//        System.out.println(console.getText());
-//        console.clear();
-//    }
-
    // запись файла на сервер
     private void writeFileFromServer(FileMessage fm) {
         try {
@@ -91,7 +86,7 @@ public class Controller implements Initializable {
         }
     }
 
-    // получение спика файлов на сервере с сервера завёрнутого в CommandMessage
+    // получение спика файлов  с сервера завёрнутого в CommandMessage
     private void getServerFileList (CommandMessage commandMessage) {
         if (commandMessage.getCommand().startsWith("/")) {
             String[] command = commandMessage.getCommand().split(" ");
@@ -111,6 +106,8 @@ public class Controller implements Initializable {
             Network.sendMessage(new AuthorizationMessage("/auth " + login + "±" + password));
             login = null;
             password = null;
+            getLogin.clear();
+            getPassword.clear();
 
         }
 
@@ -139,6 +136,7 @@ public class Controller implements Initializable {
             if (Files.exists(Paths.get("client_repository/" + fileToUpload))) {
                 FileMessage fileMessage = new FileMessage(Paths.get("client_repository/" + fileToUpload));
                 Network.sendMessage(fileMessage);
+                console.clear();
                 System.out.println("File was sent");
             }
 
@@ -156,6 +154,7 @@ public class Controller implements Initializable {
                     Files.delete(Paths.get("client_repository/" + fileToDelete));
                     System.out.println("File " + fileToDelete + " was deleted");
                     fileToDelete = null;
+                    console.clear();
                     refreshClientFileList();
 
                 } catch (IOException e) {
@@ -171,6 +170,7 @@ public class Controller implements Initializable {
         if (fileToDelete != null) {
             Network.sendMessage(new CommandMessage("/del " + fileToDelete));
             fileToDelete = null;
+            console.clear();
             refreshServerFileList();
         }
     }
