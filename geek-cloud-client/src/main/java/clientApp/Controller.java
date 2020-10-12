@@ -24,6 +24,12 @@ public class Controller implements Initializable {
     TextField console;
 
     @FXML
+    TextField getLogin;
+
+    @FXML
+    TextField getPassword;
+
+    @FXML
     ListView<String> clientFileList;
 
     @FXML
@@ -38,11 +44,17 @@ public class Controller implements Initializable {
 
     String fileToDelete;
 
+    String login;
+
+    String password;
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Network.start();
         //отправляем команду на получение списка файлов сервера
-        Network.sendMessage(new CommandMessage("/list"));
+//        Network.sendMessage(new CommandMessage("/list"));
         Thread t = new Thread(() -> {
             try {
                 while (true) {
@@ -67,7 +79,6 @@ public class Controller implements Initializable {
         });
         t.setDaemon(true);
         t.start();
-        refreshServerFileList();
         refreshClientFileList();
     }
 
@@ -95,6 +106,25 @@ public class Controller implements Initializable {
         } else {
             console.setText(commandMessage.getCommand());
         }
+    }
+
+    //отправляем логин и пароль на проверку
+    public void pressOnLoginBtn(ActionEvent actionEvent) {
+        login = getLogin.getText();
+        password = getPassword.getText();
+        if (login != null && password != null) {
+            Network.sendMessage(new CommandMessage("/auth " + login + "~" + password));
+            login = null;
+            password = null;
+
+        }
+
+    }
+
+    //обновляем список файлов с севреа в GUI
+    public void pressOnRefreshFilesBtn(ActionEvent actionEvent) {
+        Network.sendMessage(new CommandMessage("/list"));
+
     }
 
     //реализация загрузки файла на клиента через GUI
@@ -176,9 +206,6 @@ public class Controller implements Initializable {
           });
     }
 
-
-    public void pressOnLoginBtn(ActionEvent actionEvent) {
-    }
 
 
 
