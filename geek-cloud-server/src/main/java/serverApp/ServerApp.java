@@ -32,10 +32,16 @@ public class ServerApp {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture future = b.bind(8189).sync();
             System.out.println("Server started...");
+            //подключаем базу данных
+            SqlClient.connect();
             future.channel().closeFuture().sync();
-        } finally {
+
+          } finally {
+            //отключаем базу данных
+            SqlClient.disconnect();
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+
         }
     }
 
