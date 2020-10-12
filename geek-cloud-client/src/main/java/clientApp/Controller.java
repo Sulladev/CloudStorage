@@ -1,9 +1,6 @@
 package clientApp;
 
-import common.AbstractMessage;
-import common.CommandMessage;
-import common.FileMessage;
-import common.FileRequest;
+import common.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,8 +50,6 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Network.start();
-        //отправляем команду на получение списка файлов сервера
-//        Network.sendMessage(new CommandMessage("/list"));
         Thread t = new Thread(() -> {
             try {
                 while (true) {
@@ -113,7 +108,7 @@ public class Controller implements Initializable {
         login = getLogin.getText();
         password = getPassword.getText();
         if (login != null && password != null) {
-            Network.sendMessage(new CommandMessage("/auth " + login + "~" + password));
+            Network.sendMessage(new AuthorizationMessage("/auth " + login + "±" + password));
             login = null;
             password = null;
 
