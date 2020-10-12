@@ -9,8 +9,8 @@
 <?import javafx.scene.control.Label?>
 <VBox fx:id="rootNode" alignment="CENTER" prefHeight="450.0" prefWidth="750.0" style="-fx-background-color: linear-gradient(#fff 0%, #eee 10%, #ddd 90%, #bbb 100%);" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.172-ea" fx:controller="clientApp.Controller">
     <HBox>
-        <TextField fx:id="login" focusTraversable="false" promptText="enter your username and password using the delimiter ~" HBox.hgrow="ALWAYS" />
-
+        <TextField fx:id="getLogin" focusTraversable="false" promptText="Enter your username" HBox.hgrow="ALWAYS" />
+        <TextField fx:id="getPassword" focusTraversable="false" promptText="Enter your password" HBox.hgrow="ALWAYS" />
         <Button onAction="#pressOnLoginBtn" text="Login" />
 
     </HBox>
