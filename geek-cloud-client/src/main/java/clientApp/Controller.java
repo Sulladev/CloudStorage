@@ -29,6 +29,7 @@ public class Controller implements Initializable {
     @FXML
     ListView<String> serverFileList;
 
+    // список файлов с сервера
     ArrayList<String> requestForServerFileList;
 
     String fileToDownload;
@@ -40,6 +41,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Network.start();
+        //отправляем команду на получение списка файлов сервера
         Network.sendMessage(new CommandMessage("/list"));
         Thread t = new Thread(() -> {
             try {
@@ -74,6 +76,7 @@ public class Controller implements Initializable {
 //        console.clear();
 //    }
 
+   // запись файла на сервер
     private void writeFileFromServer(FileMessage fm) {
         try {
             Files.write(Paths.get("client_repository/" + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
@@ -82,6 +85,7 @@ public class Controller implements Initializable {
         }
     }
 
+    // получение спика файлов на сервере с сервера завёрнутого в CommandMessage
     private void getServerFileList (CommandMessage commandMessage) {
         if (commandMessage.getCommand().startsWith("/")) {
             String[] command = commandMessage.getCommand().split(" ");
@@ -93,6 +97,7 @@ public class Controller implements Initializable {
         }
     }
 
+    //реализация загрузки файла на клиента через GUI
     public void pressOnDownloadBtn(ActionEvent actionEvent) {
         fileToDownload = console.getText();
         if (serverFileList.getItems().size() > 0) {
@@ -102,6 +107,7 @@ public class Controller implements Initializable {
         }
     }
 
+    //реализация загрузки файла на сервер через GUI
     public void pressOnUploadBtn(ActionEvent actionEvent) {
         fileToUpload = console.getText();
         try {
@@ -116,7 +122,7 @@ public class Controller implements Initializable {
         }
     }
 
-    //доделать удаление файла
+    //удаляем файлы с клиента. Папка + GUI
     public void pressOnDeleteOnClientBtn(ActionEvent actionEvent) {
         fileToDelete = console.getText();
         if (fileToDelete != null) {
@@ -134,6 +140,7 @@ public class Controller implements Initializable {
         }
     }
 
+    //удаляем файлы с сервера. Папка + GUI
     public void pressOnDeleteOnServerBtn(ActionEvent actionEvent) {
         fileToDelete = console.getText();
         if (fileToDelete != null) {
@@ -143,6 +150,7 @@ public class Controller implements Initializable {
         }
     }
 
+    //обновляем список файлов на клиенте
     public void refreshClientFileList() {
         Platform.runLater(() -> {
             try {
@@ -157,6 +165,7 @@ public class Controller implements Initializable {
         });
     }
 
+    //обновляем список файлов на сервере
     public void refreshServerFileList() {
           Platform.runLater(() -> {
               serverFileList.getItems().clear();
@@ -166,6 +175,11 @@ public class Controller implements Initializable {
               }
           });
     }
+
+
+    public void pressOnLoginBtn(ActionEvent actionEvent) {
+    }
+
 
 
 }
