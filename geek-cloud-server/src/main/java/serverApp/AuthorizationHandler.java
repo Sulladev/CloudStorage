@@ -60,7 +60,7 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
             System.out.println("Invalid login attempt: " + login);
             return isAuthorized = false;
         } else {
-            System.out.println("Successful authorization");
+            System.out.println("Authorization successful");
             return isAuthorized = true;
 
         }
