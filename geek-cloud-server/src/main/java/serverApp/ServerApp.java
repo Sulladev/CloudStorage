@@ -1,5 +1,6 @@
 package serverApp;
 
+import common.AuthorizationMessage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -25,6 +26,7 @@ public class ServerApp {
                             socketChannel.pipeline().addLast(
                                     new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
+                                    new AuthorizationHandler(),
                                     new ServerAppHandler()
                             );
                         }
