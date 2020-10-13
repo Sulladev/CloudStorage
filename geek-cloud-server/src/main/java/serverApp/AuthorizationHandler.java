@@ -7,38 +7,39 @@ import common.FileRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.io.File;
+
+
 public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
 
     private boolean isAuthorized;
 
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        if (!isAuthorized) {
-            if (msg instanceof AuthorizationMessage) {
-                AuthorizationMessage authorizationMessage = (AuthorizationMessage) msg;
-                readCommand(ctx, authorizationMessage);
-
-            }
+        if (!isAuthorized && msg instanceof AuthorizationMessage) {
+            AuthorizationMessage authorizationMessage = (AuthorizationMessage) msg;
+            readCommand(ctx, authorizationMessage);
         }
+
         if (isAuthorized) {
-            if (msg instanceof FileRequest) {
-            FileRequest fileRequest = (FileRequest) msg;
-            ctx.fireChannelRead(msg);
-        }
+             if (msg instanceof FileRequest) {
+                FileRequest fileRequest = (FileRequest) msg;
+                ctx.fireChannelRead(msg);
+            }
 
-        if (msg instanceof FileMessage) {
-            FileMessage fileMessage = (FileMessage) msg;
-            ctx.fireChannelRead(msg);
-        }
+            if (msg instanceof FileMessage) {
+                FileMessage fileMessage = (FileMessage) msg;
+                ctx.fireChannelRead(msg);
+            }
 
-        if (msg instanceof CommandMessage) {
-            CommandMessage commandMessage = (CommandMessage) msg;
-            ctx.fireChannelRead(msg);
-        }
+            if (msg instanceof CommandMessage) {
+                CommandMessage commandMessage = (CommandMessage) msg;
+                ctx.fireChannelRead(msg);
+            }
 
         }
-
     }
 
     private void readCommand(ChannelHandlerContext ctx, AuthorizationMessage authorizationMessage) {
@@ -46,7 +47,6 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
             String[] command = authorizationMessage.getCommand().split(" ");
             if (command[0].equals("/auth")) {
                 authorization(command[1]);
-                // тут впроде как напрашивается отправка какой-то информации клиенту?
             }
         }
     }
@@ -62,9 +62,10 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
         } else {
             System.out.println("Authorization successful");
             return isAuthorized = true;
-
         }
     }
+
+
 
 
     @Override

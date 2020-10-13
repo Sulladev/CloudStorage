@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     ArrayList<String> fileList = new ArrayList<>();
+    String rootDirName = "server_repository/";
 
 
     @Override
@@ -40,7 +41,7 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     // отправляем обновленный список файлов на сервере - клиенту
     private void sendFileListUpdate(ChannelHandlerContext ctx) {
-        refreshFilesList("server_repository");
+        refreshFilesList(rootDirName);
         CommandMessage commandMessage = new CommandMessage("/list");
         commandMessage.setCommandList(fileList);
         ctx.writeAndFlush(commandMessage);
@@ -49,8 +50,8 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     //  отправляем файл клиенту
     private void sendFileToClient(ChannelHandlerContext ctx, FileRequest fileRequest) {
         try {
-            if (Files.exists(Paths.get("server_repository/" + fileRequest.getFileName()))) {
-                FileMessage fileMessage = new FileMessage(Paths.get("server_repository/" + fileRequest.getFileName()));
+            if (Files.exists(Paths.get(rootDirName + fileRequest.getFileName()))) {
+                FileMessage fileMessage = new FileMessage(Paths.get(rootDirName + fileRequest.getFileName()));
                 ctx.writeAndFlush(fileMessage);
                 System.out.println("File was sent");
             }
@@ -62,8 +63,8 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     // принимаем файл от клиента
     private void writeFileFromClient(ChannelHandlerContext ctx, FileMessage fileMessage) {
         try {
-            if (!Files.exists(Paths.get("server_repository/" + fileMessage.getFileName()))) {
-                Files.write(Paths.get("server_repository/" + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
+            if (!Files.exists(Paths.get(rootDirName + fileMessage.getFileName()))) {
+                Files.write(Paths.get(rootDirName + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
                 sendFileListUpdate(ctx);
                 System.out.println("File received");
             }
@@ -103,9 +104,9 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     // удаляем файл на сервере
     private void deleteFile (String fileToDelete) {
-        if (Files.exists(Paths.get("server_repository/" + fileToDelete))) {
+        if (Files.exists(Paths.get(rootDirName + fileToDelete))) {
             try {
-                Files.delete(Paths.get("server_repository/" + fileToDelete));
+                Files.delete(Paths.get(rootDirName + fileToDelete));
                 System.out.println("File " + fileToDelete + " deleted");
             } catch (IOException e) {
                 e.printStackTrace();
