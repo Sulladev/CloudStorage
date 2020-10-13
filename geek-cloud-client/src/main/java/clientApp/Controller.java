@@ -125,7 +125,7 @@ public class Controller implements Initializable {
     //реализация загрузки файла на клиента через GUI
     public void pressOnDownloadBtn(ActionEvent actionEvent) {
         fileToDownload = console.getText();
-        if (serverFileList.getItems().isEmpty()) {
+        if (!serverFileList.getItems().isEmpty()) {
             Network.sendMessage(new FileRequest(fileToDownload));
             console.clear();
             System.out.println("File received");
