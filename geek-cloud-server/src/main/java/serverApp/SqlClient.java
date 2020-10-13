@@ -7,6 +7,10 @@ public class SqlClient {
     private static Connection connection;
     private static Statement statement;
 
+
+    private SqlClient() {
+    }
+
     static void connect() {
         try {
             Class.forName("org.sqlite.JDBC");

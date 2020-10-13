@@ -1,9 +1,6 @@
 package clientApp;
 
-import common.AbstractMessage;
-import common.CommandMessage;
-import common.FileMessage;
-import common.FileRequest;
+import common.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +21,12 @@ public class Controller implements Initializable {
     TextField console;
 
     @FXML
+    TextField getLogin;
+
+    @FXML
+    TextField getPassword;
+
+    @FXML
     ListView<String> clientFileList;
 
     @FXML
@@ -38,11 +41,18 @@ public class Controller implements Initializable {
 
     String fileToDelete;
 
+    String login;
+
+    String password;
+
+    String userDirName = "client_repository/";
+
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Network.start();
-        //отправляем команду на получение списка файлов сервера
-        Network.sendMessage(new CommandMessage("/list"));
         Thread t = new Thread(() -> {
             try {
                 while (true) {
@@ -67,25 +77,19 @@ public class Controller implements Initializable {
         });
         t.setDaemon(true);
         t.start();
-        refreshServerFileList();
         refreshClientFileList();
     }
-
-//    private void consoleCommand (ActionEvent actionEvent) {
-//        System.out.println(console.getText());
-//        console.clear();
-//    }
 
    // запись файла на сервер
     private void writeFileFromServer(FileMessage fm) {
         try {
-            Files.write(Paths.get("client_repository/" + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
+            Files.write(Paths.get(userDirName + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // получение спика файлов на сервере с сервера завёрнутого в CommandMessage
+    // получение спика файлов  с сервера завёрнутого в CommandMessage
     private void getServerFileList (CommandMessage commandMessage) {
         if (commandMessage.getCommand().startsWith("/")) {
             String[] command = commandMessage.getCommand().split(" ");
@@ -97,10 +101,31 @@ public class Controller implements Initializable {
         }
     }
 
+    //отправляем логин и пароль на проверку
+    public void pressOnLoginBtn(ActionEvent actionEvent) {
+        login = getLogin.getText();
+        password = getPassword.getText();
+        if (login != null && password != null) {
+            Network.sendMessage(new AuthorizationMessage("/auth " + login + "±" + password));
+            login = null;
+            password = null;
+            getLogin.clear();
+            getPassword.clear();
+
+        }
+
+    }
+
+    //обновляем список файлов с севреа в GUI
+    public void pressOnRefreshFilesBtn(ActionEvent actionEvent) {
+        Network.sendMessage(new CommandMessage("/list"));
+
+    }
+
     //реализация загрузки файла на клиента через GUI
     public void pressOnDownloadBtn(ActionEvent actionEvent) {
         fileToDownload = console.getText();
-        if (serverFileList.getItems().size() > 0) {
+        if (serverFileList.getItems().isEmpty()) {
             Network.sendMessage(new FileRequest(fileToDownload));
             console.clear();
             System.out.println("File received");
@@ -111,9 +136,10 @@ public class Controller implements Initializable {
     public void pressOnUploadBtn(ActionEvent actionEvent) {
         fileToUpload = console.getText();
         try {
-            if (Files.exists(Paths.get("client_repository/" + fileToUpload))) {
-                FileMessage fileMessage = new FileMessage(Paths.get("client_repository/" + fileToUpload));
+            if (Files.exists(Paths.get(userDirName + fileToUpload))) {
+                FileMessage fileMessage = new FileMessage(Paths.get(userDirName + fileToUpload));
                 Network.sendMessage(fileMessage);
+                console.clear();
                 System.out.println("File was sent");
             }
 
@@ -125,17 +151,16 @@ public class Controller implements Initializable {
     //удаляем файлы с клиента. Папка + GUI
     public void pressOnDeleteOnClientBtn(ActionEvent actionEvent) {
         fileToDelete = console.getText();
-        if (fileToDelete != null) {
-            if (Files.exists(Paths.get("client_repository/" + fileToDelete))) {
-                try {
-                    Files.delete(Paths.get("client_repository/" + fileToDelete));
-                    System.out.println("File " + fileToDelete + " was deleted");
-                    fileToDelete = null;
-                    refreshClientFileList();
+        if (fileToDelete != null && Files.exists(Paths.get(userDirName + fileToDelete))) {
+            try {
+                Files.delete(Paths.get(userDirName + fileToDelete));
+                System.out.println("File " + fileToDelete + " was deleted");
+                fileToDelete = null;
+                console.clear();
+                refreshClientFileList();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -146,6 +171,7 @@ public class Controller implements Initializable {
         if (fileToDelete != null) {
             Network.sendMessage(new CommandMessage("/del " + fileToDelete));
             fileToDelete = null;
+            console.clear();
             refreshServerFileList();
         }
     }
@@ -155,7 +181,7 @@ public class Controller implements Initializable {
         Platform.runLater(() -> {
             try {
                 clientFileList.getItems().clear();
-                Files.list(Paths.get("client_repository"))
+                Files.list(Paths.get(userDirName))
                         .filter(p -> !Files.isDirectory(p))
                         .map(p -> p.getFileName().toString())
                         .forEach(o -> clientFileList.getItems().add(o));
@@ -176,9 +202,6 @@ public class Controller implements Initializable {
           });
     }
 
-
-    public void pressOnLoginBtn(ActionEvent actionEvent) {
-    }
 
 
 
