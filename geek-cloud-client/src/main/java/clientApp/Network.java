@@ -13,6 +13,10 @@ public class Network {
    private static ObjectEncoderOutputStream out;
    private static ObjectDecoderInputStream in;
 
+   private Network() {
+
+   }
+
    public static void start() {
       try {
          socket = new Socket("localhost", 8189);
