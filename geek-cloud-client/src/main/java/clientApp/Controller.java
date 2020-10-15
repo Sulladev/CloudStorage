@@ -45,7 +45,7 @@ public class Controller implements Initializable {
 
     String password;
 
-    String userDirName = "client_repository/";
+    String userDir = "client_repository/";
 
 
 
@@ -83,7 +83,7 @@ public class Controller implements Initializable {
    // запись файла на сервер
     private void writeFileFromServer(FileMessage fm) {
         try {
-            Files.write(Paths.get(userDirName + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
+            Files.write(Paths.get(userDir + fm.getFileName()), fm.getData(), StandardOpenOption.CREATE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,8 +136,8 @@ public class Controller implements Initializable {
     public void pressOnUploadBtn(ActionEvent actionEvent) {
         fileToUpload = console.getText();
         try {
-            if (Files.exists(Paths.get(userDirName + fileToUpload))) {
-                FileMessage fileMessage = new FileMessage(Paths.get(userDirName + fileToUpload));
+            if (Files.exists(Paths.get(userDir + fileToUpload))) {
+                FileMessage fileMessage = new FileMessage(Paths.get(userDir + fileToUpload));
                 Network.sendMessage(fileMessage);
                 console.clear();
                 System.out.println("File was sent");
@@ -151,9 +151,9 @@ public class Controller implements Initializable {
     //удаляем файлы с клиента. Папка + GUI
     public void pressOnDeleteOnClientBtn(ActionEvent actionEvent) {
         fileToDelete = console.getText();
-        if (fileToDelete != null && Files.exists(Paths.get(userDirName + fileToDelete))) {
+        if (fileToDelete != null && Files.exists(Paths.get(userDir + fileToDelete))) {
             try {
-                Files.delete(Paths.get(userDirName + fileToDelete));
+                Files.delete(Paths.get(userDir + fileToDelete));
                 System.out.println("File " + fileToDelete + " was deleted");
                 fileToDelete = null;
                 console.clear();
@@ -181,7 +181,7 @@ public class Controller implements Initializable {
         Platform.runLater(() -> {
             try {
                 clientFileList.getItems().clear();
-                Files.list(Paths.get(userDirName))
+                Files.list(Paths.get(userDir))
                         .filter(p -> !Files.isDirectory(p))
                         .map(p -> p.getFileName().toString())
                         .forEach(o -> clientFileList.getItems().add(o));
@@ -201,9 +201,5 @@ public class Controller implements Initializable {
               }
           });
     }
-
-
-
-
 }
 

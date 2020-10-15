@@ -6,17 +6,20 @@ import common.FileRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.sql.SQLData;
 import java.util.ArrayList;
 
 public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     ArrayList<String> fileList = new ArrayList<>();
-    String rootDirName = "server_repository/";
+    String rootDir = "server_repository/";
+    private final String username;
+
+    public ServerAppHandler(String username) {
+        this.username = username;
+    }
 
 
     @Override
@@ -41,7 +44,7 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     // отправляем обновленный список файлов на сервере - клиенту
     private void sendFileListUpdate(ChannelHandlerContext ctx) {
-        refreshFilesList(rootDirName);
+        refreshFilesList(rootDir + username +"/");
         CommandMessage commandMessage = new CommandMessage("/list");
         commandMessage.setCommandList(fileList);
         ctx.writeAndFlush(commandMessage);
@@ -50,8 +53,8 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     //  отправляем файл клиенту
     private void sendFileToClient(ChannelHandlerContext ctx, FileRequest fileRequest) {
         try {
-            if (Files.exists(Paths.get(rootDirName + fileRequest.getFileName()))) {
-                FileMessage fileMessage = new FileMessage(Paths.get(rootDirName + fileRequest.getFileName()));
+            if (Files.exists(Paths.get(rootDir + fileRequest.getFileName()))) {
+                FileMessage fileMessage = new FileMessage(Paths.get(rootDir + username +"/" +  fileRequest.getFileName()));
                 ctx.writeAndFlush(fileMessage);
                 System.out.println("File was sent");
             }
@@ -63,8 +66,8 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     // принимаем файл от клиента
     private void writeFileFromClient(ChannelHandlerContext ctx, FileMessage fileMessage) {
         try {
-            if (!Files.exists(Paths.get(rootDirName + fileMessage.getFileName()))) {
-                Files.write(Paths.get(rootDirName + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
+            if (!Files.exists(Paths.get(rootDir + username +"/" + fileMessage.getFileName()))) {
+                Files.write(Paths.get(rootDir + username +"/" +  fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
                 sendFileListUpdate(ctx);
                 System.out.println("File received");
             }
@@ -104,9 +107,9 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     // удаляем файл на сервере
     private void deleteFile (String fileToDelete) {
-        if (Files.exists(Paths.get(rootDirName + fileToDelete))) {
+        if (Files.exists(Paths.get(rootDir + username +"/" +  fileToDelete))) {
             try {
-                Files.delete(Paths.get(rootDirName + fileToDelete));
+                Files.delete(Paths.get(rootDir + username +"/" +  fileToDelete));
                 System.out.println("File " + fileToDelete + " deleted");
             } catch (IOException e) {
                 e.printStackTrace();

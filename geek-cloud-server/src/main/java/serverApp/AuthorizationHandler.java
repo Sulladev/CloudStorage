@@ -7,12 +7,15 @@ import common.FileRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
 
     private boolean isAuthorized;
+    private String username;
+    String rootDir = "server_repository/";
 
 
     @Override
@@ -23,7 +26,14 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
             readCommand(ctx, authorizationMessage);
         }
 
-        if (isAuthorized) {
+        if (isAuthorized ) {
+
+            if (!Files.exists(Paths.get(rootDir + username +"/"))) {
+                Files.createDirectory(Paths.get(rootDir + username + "/"));
+            }
+
+            ctx.pipeline().addLast(new ServerAppHandler(username));
+
              if (msg instanceof FileRequest) {
                 FileRequest fileRequest = (FileRequest) msg;
                 ctx.fireChannelRead(msg);
@@ -55,8 +65,8 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
         String[] arr = msg.split("±");
         String login = arr[0];
         String password = arr[1];
-        String nickname = SqlClient.getNickname(login, password);
-        if (nickname == null) {
+        username = SqlClient.getNickname(login, password);
+        if (username == null) {
             System.out.println("Invalid login attempt: " + login);
             return isAuthorized = false;
         } else {
@@ -64,9 +74,6 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
             return isAuthorized = true;
         }
     }
-
-
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
