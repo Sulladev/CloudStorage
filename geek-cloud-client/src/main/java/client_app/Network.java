@@ -1,4 +1,4 @@
-package clientApp;
+package client_app;
 
 
 import common.AbstractMessage;

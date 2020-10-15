@@ -1,4 +1,4 @@
-package serverApp;
+package server_app;
 
 import common.CommandMessage;
 import common.FileMessage;
