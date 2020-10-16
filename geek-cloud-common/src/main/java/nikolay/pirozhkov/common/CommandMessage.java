@@ -1,4 +1,4 @@
-package common;
+package nikolay.pirozhkov.common;
 
 import java.util.ArrayList;
 

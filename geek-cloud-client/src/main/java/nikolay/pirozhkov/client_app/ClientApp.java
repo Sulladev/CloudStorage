@@ -1,4 +1,4 @@
-package client_app;
+package nikolay.pirozhkov.client_app;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

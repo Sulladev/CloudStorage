@@ -1,4 +1,4 @@
-package client_app;
+package nikolay.pirozhkov.client_app;
 
 import common.*;
 import javafx.application.Platform;
@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import nikolay.pirozhkov.common.*;
 
 import java.io.IOException;
 import java.net.URL;

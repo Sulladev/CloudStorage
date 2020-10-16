@@ -1,9 +1,9 @@
-package server_app;
+package nikolay.pirozhkov.server_app;
 
-import common.AuthorizationMessage;
-import common.CommandMessage;
-import common.FileMessage;
-import common.FileRequest;
+import nikolay.pirozhkov.common.AuthorizationMessage;
+import nikolay.pirozhkov.common.CommandMessage;
+import nikolay.pirozhkov.common.FileMessage;
+import nikolay.pirozhkov.common.FileRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 

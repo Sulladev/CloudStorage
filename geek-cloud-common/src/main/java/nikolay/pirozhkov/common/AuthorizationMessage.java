@@ -1,4 +1,4 @@
-package common;
+package nikolay.pirozhkov.common;
 
 public class AuthorizationMessage extends AbstractMessage {
     private String command;
