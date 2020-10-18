@@ -1,7 +1,7 @@
-package clientApp;
+package nikolay.pirozhkov.client_app;
 
 
-import common.AbstractMessage;
+import nikolay.pirozhkov.common.AbstractMessage;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 

@@ -1,21 +1,25 @@
-package serverApp;
+package nikolay.pirozhkov.server_app;
 
-import common.CommandMessage;
-import common.FileMessage;
-import common.FileRequest;
+import nikolay.pirozhkov.common.CommandMessage;
+import nikolay.pirozhkov.common.FileMessage;
+import nikolay.pirozhkov.common.FileRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.sql.SQLData;
 import java.util.ArrayList;
 
 public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     ArrayList<String> fileList = new ArrayList<>();
+    String rootDir = "server_repository/";
+    private final String username;
+
+    public ServerAppHandler(String username) {
+        this.username = username;
+    }
 
 
     @Override
@@ -40,7 +44,7 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     // отправляем обновленный список файлов на сервере - клиенту
     private void sendFileListUpdate(ChannelHandlerContext ctx) {
-        refreshFilesList("server_repository");
+        refreshFilesList(rootDir + username +"/");
         CommandMessage commandMessage = new CommandMessage("/list");
         commandMessage.setCommandList(fileList);
         ctx.writeAndFlush(commandMessage);
@@ -49,8 +53,8 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     //  отправляем файл клиенту
     private void sendFileToClient(ChannelHandlerContext ctx, FileRequest fileRequest) {
         try {
-            if (Files.exists(Paths.get("server_repository/" + fileRequest.getFileName()))) {
-                FileMessage fileMessage = new FileMessage(Paths.get("server_repository/" + fileRequest.getFileName()));
+            if (Files.exists(Paths.get(rootDir + fileRequest.getFileName()))) {
+                FileMessage fileMessage = new FileMessage(Paths.get(rootDir + username +"/" +  fileRequest.getFileName()));
                 ctx.writeAndFlush(fileMessage);
                 System.out.println("File was sent");
             }
@@ -62,8 +66,8 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
     // принимаем файл от клиента
     private void writeFileFromClient(ChannelHandlerContext ctx, FileMessage fileMessage) {
         try {
-            if (!Files.exists(Paths.get("server_repository/" + fileMessage.getFileName()))) {
-                Files.write(Paths.get("server_repository/" + fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
+            if (!Files.exists(Paths.get(rootDir + username +"/" + fileMessage.getFileName()))) {
+                Files.write(Paths.get(rootDir + username +"/" +  fileMessage.getFileName()), fileMessage.getData(), StandardOpenOption.CREATE);
                 sendFileListUpdate(ctx);
                 System.out.println("File received");
             }
@@ -103,9 +107,9 @@ public class ServerAppHandler extends ChannelInboundHandlerAdapter {
 
     // удаляем файл на сервере
     private void deleteFile (String fileToDelete) {
-        if (Files.exists(Paths.get("server_repository/" + fileToDelete))) {
+        if (Files.exists(Paths.get(rootDir + username +"/" +  fileToDelete))) {
             try {
-                Files.delete(Paths.get("server_repository/" + fileToDelete));
+                Files.delete(Paths.get(rootDir + username +"/" +  fileToDelete));
                 System.out.println("File " + fileToDelete + " deleted");
             } catch (IOException e) {
                 e.printStackTrace();

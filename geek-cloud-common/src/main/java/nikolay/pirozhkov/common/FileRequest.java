@@ -1,4 +1,4 @@
-package common;
+package nikolay.pirozhkov.common;
 
 public class FileRequest extends AbstractMessage{
     private String fileName;

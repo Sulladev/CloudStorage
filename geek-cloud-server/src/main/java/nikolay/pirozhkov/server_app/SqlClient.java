@@ -1,4 +1,4 @@
-package serverApp;
+package nikolay.pirozhkov.server_app;
 
 import java.sql.*;
 

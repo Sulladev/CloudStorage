@@ -1,4 +1,4 @@
-package serverApp;
+package nikolay.pirozhkov.server_app;
 
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -26,8 +26,7 @@ public class ServerApp {
                             socketChannel.pipeline().addLast(
                                     new ObjectDecoder(1024 * 1024 * 100, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
-                                    new AuthorizationHandler(),
-                                    new ServerAppHandler()
+                                    new AuthorizationHandler()
                             );
                         }
                     })
