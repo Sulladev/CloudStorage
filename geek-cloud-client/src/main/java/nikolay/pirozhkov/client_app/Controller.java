@@ -1,13 +1,14 @@
 package nikolay.pirozhkov.client_app;
 
-import common.*;
+import javafx.scene.control.PasswordField;
+import nikolay.pirozhkov.common.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import nikolay.pirozhkov.common.*;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +26,7 @@ public class Controller implements Initializable {
     TextField getLogin;
 
     @FXML
-    TextField getPassword;
+    PasswordField getPassword;
 
     @FXML
     ListView<String> clientFileList;
