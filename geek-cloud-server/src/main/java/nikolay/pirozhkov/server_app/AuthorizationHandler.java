@@ -7,6 +7,7 @@ import nikolay.pirozhkov.common.FileRequest;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -14,7 +15,6 @@ import java.nio.file.Paths;
 public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
 
     private boolean isAuthorized;
-    private String username;
     String rootDir = "server_repository/";
 
 
@@ -27,28 +27,7 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (isAuthorized ) {
-
-            if (!Files.exists(Paths.get(rootDir + username +"/"))) {
-                Files.createDirectory(Paths.get(rootDir + username + "/"));
-            }
-
-            ctx.pipeline().addLast(new ServerAppHandler(username));
-
-             if (msg instanceof FileRequest) {
-                FileRequest fileRequest = (FileRequest) msg;
-                ctx.fireChannelRead(msg);
-            }
-
-            if (msg instanceof FileMessage) {
-                FileMessage fileMessage = (FileMessage) msg;
-                ctx.fireChannelRead(msg);
-            }
-
-            if (msg instanceof CommandMessage) {
-                CommandMessage commandMessage = (CommandMessage) msg;
-                ctx.fireChannelRead(msg);
-            }
-
+             ctx.fireChannelRead(msg);
         }
     }
 
@@ -56,21 +35,29 @@ public class AuthorizationHandler extends ChannelInboundHandlerAdapter {
         if (authorizationMessage.getCommand().startsWith("/")) {
             String[] command = authorizationMessage.getCommand().split(" ");
             if (command[0].equals("/auth")) {
-                authorization(command[1]);
+                authorization(command[1], ctx);
             }
         }
     }
 
-    private boolean authorization(String msg) {
+    private boolean authorization(String msg, ChannelHandlerContext ctx) {
         String[] arr = msg.split("±");
         String login = arr[0];
         String password = arr[1];
-        username = SqlClient.getNickname(login, password);
+        String username = SqlClient.getNickname(login, password);
         if (username == null) {
             System.out.println("Invalid login attempt: " + login);
             return isAuthorized = false;
         } else {
             System.out.println("Authorization successful");
+            if (!Files.exists(Paths.get(rootDir + username +"/"))) {
+                try {
+                    Files.createDirectory(Paths.get(rootDir + username + "/"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            ctx.pipeline().addLast(new ServerAppHandler(username));
             return isAuthorized = true;
         }
     }
